@@ -36,6 +36,18 @@ def process_websites(csv_file):
                 print("Website link is empty. Skipping...")
                 continue
             
+            isEmailAlreadyPresent = row.get('Email')
+            if isEmailAlreadyPresent:
+                print("Email already present. checking its validity...")
+                isEmailAlreadyValidated = row.get('Valid Email')
+                if isEmailAlreadyValidated:
+                    print("Email is already validated. Skipping...")
+                    continue
+                else :
+                    print("Email is not validated. Validating...")
+                    row['Valid Email'] = validate_email(isEmailAlreadyPresent)
+                    continue
+            
             domain = extract_domain_link(website_url)
             contact_url = find_contact_page(domain)
             if contact_url:
