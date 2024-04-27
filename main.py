@@ -1,6 +1,27 @@
 import os
-from logic.web_processor import process_websites
+from logic.constants import LINE_SPACER
+from logic.file_processor import file_processor
 from logic.scraper_welcome import message
+
+def privacy_validator():
+    print(LINE_SPACER)
+    print("For your IP protection")
+    print(f"{LINE_SPACER}\n")
+    user_input = input("Are you using VPN/Proxies or RDP? (y/n): ").lower()
+    return user_input
+
+
+def files_lopper(csv_files, processing_batch_no, directory, workers):
+    print(LINE_SPACER)
+    print(f"Processing {processing_batch_no} started!\n")
+    for csv_file in csv_files:
+        file_path = os.path.join(directory, csv_file)
+        file_processor(csv_file, file_path,  workers)
+    
+    print(f"{LINE_SPACER}\n")
+    print(f"Processing {processing_batch_no} completed!")
+    print(f"{LINE_SPACER}\n")    
+    
 
 # Main function
 def main():
@@ -8,36 +29,26 @@ def main():
     
     directory = "./data"
     
-    csv_files = [file for file in os.listdir(directory) if file.endswith('.csv')]
-    
-    for csv_file in csv_files:
-        print(f"===================================================\n")
-        print(f"Processing {csv_file} \n")
-        print(f"===================================================\n")
-        file_path = os.path.join(directory, csv_file)
-        process_websites(file_path,15)
-    
-    print(f"===================================================\n")
-    print(f"Processing 1 completed! \n")
-    print(f"===================================================\n\n")
-    #TODO: save performance results to a new csv file
-    
-    print(f"Starting Processing 2\n")
-    
-    for csv_file in csv_files:
-        print(f"===================================================\n")
-        print(f"Processing {csv_file} \n")
-        print(f"===================================================\n")
-        file_path = os.path.join(directory, csv_file)
-        process_websites(file_path,10)
+    while True:
+        user_input = privacy_validator()
+        if user_input == "y":
+            
+            csv_files = [file for file in os.listdir(directory) if file.endswith('.csv')]
+            files_lopper(csv_files, "Batch 1", directory, 20)
+            files_lopper(csv_files, "Batch 2", directory, 10)
+            break
         
-    print(f"===================================================\n")
-    print(f"Processing 2 completed! \n")
-    print(f"===================================================\n")
+        elif user_input == "n":
+            print(LINE_SPACER)
+            print("Quitting the program!")
+            print("Please use VPN/Proxies or RDP for your IP protection.")
+            print(f"{LINE_SPACER}\n")
+            break
+        else:
+            print("Invalid input! Please enter 'y' or 'n'")
     
-
     
-    
+   
 
 if __name__ == "__main__":
     main()
